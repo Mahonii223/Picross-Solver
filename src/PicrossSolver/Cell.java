@@ -1,8 +1,8 @@
 package PicrossSolver;
 
 public class Cell{
-    boolean certain;
-    boolean value;
+    private boolean certain;
+    private boolean value;
 
     public Cell(){
         certain = false;

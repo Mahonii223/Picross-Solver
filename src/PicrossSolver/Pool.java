@@ -68,16 +68,25 @@ public class Pool implements iPool {
         int maxLenTop = 0;
         int maxLenSide = 0;
 
-
+        //determining longest top pattern
         for(iPattern pattern : this.top.getData()){
             if(pattern.getData().size()>maxLenTop)
                 maxLenTop = pattern.getData().size();
         }
+
+        //determining longest side pattern
         for(iPattern pattern : this.side.getData()){
             if(pattern.getData().size()>maxLenSide)
                 maxLenSide = pattern.getData().size();
         }
 
+        //invoking matrix content
+        String[] matrixContent = null;
+        if(matrix!=null)
+            matrixContent = matrix.toString().split("\n");
+
+
+        //Appending top marigin
         for(int i = 0; i<maxLenTop; i++){
             for(int a = 0; a<maxLenSide*3; a++){
                 builder.append(" ");
@@ -93,6 +102,7 @@ public class Pool implements iPool {
             builder.append('\n');
         }
 
+        //appending side marigin and matrix
         int currentIndex = 0;
         for(iPattern pattern : side.getData()){
             for(int i = 0; i<maxLenSide; i++) {
@@ -102,8 +112,108 @@ public class Pool implements iPool {
                     builder.append("  ");
                 builder.append('|');
             }
+            if(matrixContent!=null) {
+                builder.append(matrixContent[currentIndex]);
+            }
             builder.append('\n');
+            currentIndex++;
         }
         return builder.toString();
+    }
+
+
+    public void solve(boolean display){
+        matrix = new Matrix(side.getData().size(), top.getData().size());
+        int counter = 0;
+        while(!matrix.isSolved()&&iterate(display)){
+            counter++;
+        }
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+        System.out.println("Iterations: "+counter);
+        if(!matrix.isSolved()){
+            System.out.println("Pool could not be solved.");
+        }
+        System.out.println(toString());
+    }
+
+    public boolean iterate(boolean display){
+        int index = 0;
+        boolean changed = false;
+        for(iPattern pattern : top.getData()){
+            if(evaluate(pattern, matrix.getColumn(index)))
+                changed = true;
+            index++;
+
+
+            if(display) {
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+
+                System.out.println(matrix.toString());
+            }
+        }
+        index = 0;
+
+        for(iPattern pattern : side.getData()){
+            if(evaluate(pattern, matrix.getRow(index)))
+                changed = true;
+            index++;
+
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
+
+            System.out.println(matrix.toString());
+        }
+
+        return changed;
+    }
+
+    boolean evaluate(iPattern pattern, List<Cell> row){
+        List<Boolean> certain = new LinkedList<>();
+        for(int i=0; i<row.size(); i++){
+            certain.add(true);
+        }
+
+        List<Boolean> last = null;
+
+        RowGenerator generator = new RowGenerator(pattern, row.size());
+
+        for(List<Boolean> current : generator){
+            if(!conflict(row, current)){
+                if(last == null)
+                    last = current;
+                else{
+                    for(int i = 0; i<current.size(); i++){
+                        if(current.get(i)!=last.get(i))
+                            certain.set(i, false);
+                    }
+
+                }
+            }
+        }
+
+        boolean flag = false;
+
+        for(int i=0; i<certain.size(); i++){
+            if(certain.get(i)){
+                if(!row.get(i).isCertain()){
+                    flag = true;
+                    row.get(i).setCertain(true);
+                    row.get(i).setCertain(last.get(i));
+                }
+            }
+        }
+
+        return flag;
+    }
+
+    boolean conflict(List<Cell> row, List<Boolean> checked){
+        for(int i = 0; i<row.size(); i++){
+            if(row.get(i).isCertain() && row.get(i).getValue() != checked.get(i))
+                return true;
+
+        }
+        return false;
     }
 }
