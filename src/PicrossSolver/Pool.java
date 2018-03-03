@@ -103,7 +103,8 @@ public class Pool implements iPool {
         }
 
         //appending side marigin and matrix
-        int currentIndex = 0;
+        int lineIndex = 0;
+
         for(iPattern pattern : side.getData()){
             for(int i = 0; i<maxLenSide; i++) {
                 if (pattern.getData().size() - maxLenSide + i >= 0)
@@ -113,10 +114,10 @@ public class Pool implements iPool {
                 builder.append('|');
             }
             if(matrixContent!=null) {
-                builder.append(matrixContent[currentIndex]);
+                builder.append(matrixContent[lineIndex]);
             }
             builder.append('\n');
-            currentIndex++;
+            lineIndex++;
         }
         return builder.toString();
     }
@@ -127,14 +128,17 @@ public class Pool implements iPool {
         int counter = 0;
         while(!matrix.isSolved()&&iterate(display)){
             counter++;
+            System.out.println("Evaluation index: "+counter);
         }
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
-        System.out.println("Iterations: "+counter);
-        if(!matrix.isSolved()){
-            System.out.println("Pool could not be solved.");
+        if(display) {
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
+            System.out.println("Iterations: " + counter);
+            if (!matrix.isSolved()) {
+                System.out.println("Pool could not be solved.");
+            }
+            System.out.println(toString());
         }
-        System.out.println(toString());
     }
 
     public boolean iterate(boolean display){
@@ -144,6 +148,8 @@ public class Pool implements iPool {
             if(evaluate(pattern, matrix.getColumn(index)))
                 changed = true;
             index++;
+            System.out.println("Checking column: "+index);
+            System.out.println(this.toString());
 
 
             if(display) {
@@ -159,17 +165,35 @@ public class Pool implements iPool {
             if(evaluate(pattern, matrix.getRow(index)))
                 changed = true;
             index++;
+            System.out.println("Checking row: "+index);
+            System.out.println(this.toString());
 
-            System.out.print("\033[H\033[2J");
-            System.out.flush();
+            if(display) {
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
 
-            System.out.println(matrix.toString());
+                System.out.println(matrix.toString());
+            }
         }
 
         return changed;
     }
 
-    boolean evaluate(iPattern pattern, List<Cell> row){
+    public static boolean evaluate(iPattern pattern, List<Cell> row){
+        /*
+        System.out.println("New evaluation");
+        System.out.println(pattern);
+        for(Cell c : row){
+            if(!c.isCertain())
+                System.out.print("unkno ");
+            else
+                if(c.getValue())
+                    System.out.print("True  ");
+                else
+                    System.out.print("False ");
+        }
+        System.out.println();
+        */
         List<Boolean> certain = new LinkedList<>();
         for(int i=0; i<row.size(); i++){
             certain.add(true);
@@ -181,6 +205,7 @@ public class Pool implements iPool {
 
         for(List<Boolean> current : generator){
             if(!conflict(row, current)){
+                //System.out.println("No conflict");
                 if(last == null)
                     last = current;
                 else{
@@ -191,27 +216,50 @@ public class Pool implements iPool {
 
                 }
             }
+            //else
+              //  System.out.println("Conflict");
         }
 
         boolean flag = false;
 
+
+
+        if(last == null)
+            System.out.println("last is null");
+
+        //System.out.println(row.size()+"  "+last.size());
+
         for(int i=0; i<certain.size(); i++){
-            if(certain.get(i)){
-                if(!row.get(i).isCertain()){
+            if(certain.get(i)) {
+                if (!row.get(i).isCertain()) {
                     flag = true;
                     row.get(i).setCertain(true);
-                    row.get(i).setCertain(last.get(i));
+                    row.get(i).setValue(last.get(i));
                 }
+
+                /*if(last.get(i))
+                    System.out.print("true  ");
+                else
+                    System.out.print("false ");
             }
+            else
+                System.out.print("Unkno ");
+                */
+            }
+
         }
+        System.out.println();
 
         return flag;
     }
 
-    boolean conflict(List<Cell> row, List<Boolean> checked){
-        for(int i = 0; i<row.size(); i++){
-            if(row.get(i).isCertain() && row.get(i).getValue() != checked.get(i))
+    static boolean conflict(List<Cell> row, List<Boolean> checked){
+
+
+        for(int i = 0; i<row.size(); i++) {
+            if (row.get(i).isCertain() && row.get(i).getValue() != checked.get(i)){
                 return true;
+            }
 
         }
         return false;

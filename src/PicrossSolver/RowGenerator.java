@@ -46,27 +46,30 @@ public class RowGenerator implements Iterable<List<Boolean>>{
             gapConf.set(0, -1);
 
 
-
         Iterator<List<Boolean>> it = new Iterator<List<Boolean>>() {
 
             @Override
             public boolean hasNext(){
 
-                if(gapConf.size()==0)
+                if(gapConf.size()==0) {
                     return false;
+                }
 
+                if(gapConf.get(0)==-1) {
+                    gapConf.set(0, gapLength);
+                    return true;
+                }
 
-                if(gapConf.get(gapConf.size()-1)==gapLength)
+                if(gapConf.get(gapConf.size()-1)==gapLength) {
                     return false;
+                }
 
 
                 //at this point it is safe to assume the number of gaps is two or higher
                 //It is also safe to assume that the first non-zero gap we encounter will not be the last
 
-                if(gapConf.get(0)==-1) {
-                    gapConf.set(0, gapLength);
-                }
-                else {
+
+
                     int i = 0;
                     while (gapConf.get(i) == 0)
                         i++;
@@ -75,24 +78,21 @@ public class RowGenerator implements Iterable<List<Boolean>>{
                     gapConf.set(i, 0);
                     gapConf.set(0, current);
 
-                }
+
                 return true;
             }
 
             @Override
             public List<Boolean> next(){
 
-                System.out.println("Conf:");
-                for(int i = 0; i<gapConf.size(); i++){
-                    System.out.print(gapConf.get(i));
-                }
-                System.out.println();
-
                 List<Boolean> conf = new LinkedList<>();
 
                 for(int confIndex=0; confIndex < gapConf.size()-1; confIndex++){
 
                     for(int a = 0; a < gapConf.get(confIndex); a++)
+                        conf.add(false);
+
+                    if(confIndex>0)
                         conf.add(false);
 
                     for(int a = 0; a < pattern.getData().get(confIndex); a++)

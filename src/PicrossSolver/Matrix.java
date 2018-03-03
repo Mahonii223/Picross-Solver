@@ -36,7 +36,7 @@ public class Matrix implements iMatrix{
     public List<Cell> getRow(int index){
         List<Cell> row = new LinkedList<>();
         for(int i=0; i<width; i++){
-            row.add(get(index, i));
+            row.add(get(i, index));
         }
         return row;
     }
@@ -52,15 +52,15 @@ public class Matrix implements iMatrix{
     public String toString(){
         StringBuilder builder = new StringBuilder();
         for(int i=0; i<width*length; i++){
-            String curr = "   ";
+            String curr = " __";
             if(linear.get(i).isCertain()){
                 if(linear.get(i).getValue())
                     curr = " XX";
                 else
-                    curr = " __";
+                    curr = "   ";
             }
             builder.append(curr);
-            if(i+1%width == 0)
+            if((i+1)%width == 0)
                 builder.append('\n');
         }
 
