@@ -264,4 +264,11 @@ public class Pool implements iPool {
         }
         return false;
     }
+
+    public static void main(String[] args) {
+        Pool pool = new Pool("http://www.hanjie-star.com/picross/winter-scene-21805.html");
+        pool.solve(false);
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
 }
