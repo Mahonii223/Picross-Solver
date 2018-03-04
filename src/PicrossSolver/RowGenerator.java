@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+
 public class RowGenerator implements Iterable<List<Boolean>>{
     private iPattern pattern;
     private int length;
