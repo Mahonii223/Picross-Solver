@@ -2,11 +2,7 @@ package PicrossSolver;
 
 
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
-import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -62,7 +58,6 @@ public class Pool implements iPool {
         }
     }
 
-
     public String toString(){
         StringBuilder builder = new StringBuilder();
         int maxLenTop = 0;
@@ -85,8 +80,7 @@ public class Pool implements iPool {
         if(matrix!=null)
             matrixContent = matrix.toString().split("\n");
 
-
-        //Appending top marigin
+        //Appending top border
         for(int i = 0; i<maxLenTop; i++){
             for(int a = 0; a<maxLenSide*3; a++){
                 builder.append(" ");
@@ -102,7 +96,7 @@ public class Pool implements iPool {
             builder.append('\n');
         }
 
-        //appending side marigin and matrix
+        //appending side border and matrix
         int lineIndex = 0;
 
         for(iPattern pattern : side.getData()){
@@ -122,6 +116,10 @@ public class Pool implements iPool {
         return builder.toString();
     }
 
+    public static void flushConsole(){
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
 
     public void solve(boolean display){
         matrix = new Matrix(side.getData().size(), top.getData().size());
@@ -153,8 +151,7 @@ public class Pool implements iPool {
 
 
             if(display) {
-                System.out.print("\033[H\033[2J");
-                System.out.flush();
+                flushConsole();
 
                 System.out.println(matrix.toString());
             }
@@ -169,8 +166,7 @@ public class Pool implements iPool {
             System.out.println(this.toString());
 
             if(display) {
-                System.out.print("\033[H\033[2J");
-                System.out.flush();
+                flushConsole();
 
                 System.out.println(matrix.toString());
             }
@@ -180,20 +176,7 @@ public class Pool implements iPool {
     }
 
     public static boolean evaluate(iPattern pattern, List<Cell> row){
-        /*
-        System.out.println("New evaluation");
-        System.out.println(pattern);
-        for(Cell c : row){
-            if(!c.isCertain())
-                System.out.print("unkno ");
-            else
-                if(c.getValue())
-                    System.out.print("True  ");
-                else
-                    System.out.print("False ");
-        }
-        System.out.println();
-        */
+
         List<Boolean> certain = new LinkedList<>();
         for(int i=0; i<row.size(); i++){
             certain.add(true);
@@ -216,8 +199,6 @@ public class Pool implements iPool {
 
                 }
             }
-            //else
-              //  System.out.println("Conflict");
         }
 
         boolean flag = false;
@@ -227,8 +208,6 @@ public class Pool implements iPool {
         if(last == null)
             System.out.println("last is null");
 
-        //System.out.println(row.size()+"  "+last.size());
-
         for(int i=0; i<certain.size(); i++){
             if(certain.get(i)) {
                 if (!row.get(i).isCertain()) {
@@ -237,14 +216,6 @@ public class Pool implements iPool {
                     row.get(i).setValue(last.get(i));
                 }
 
-                /*if(last.get(i))
-                    System.out.print("true  ");
-                else
-                    System.out.print("false ");
-            }
-            else
-                System.out.print("Unkno ");
-                */
             }
 
         }
@@ -255,20 +226,21 @@ public class Pool implements iPool {
 
     static boolean conflict(List<Cell> row, List<Boolean> checked){
 
-
         for(int i = 0; i<row.size(); i++) {
+
             if (row.get(i).isCertain() && row.get(i).getValue() != checked.get(i)){
                 return true;
             }
 
         }
+
         return false;
+
     }
 
     public static void main(String[] args) {
-        Pool pool = new Pool("http://www.hanjie-star.com/picross/christmas-morning-21804.html");
+        Pool pool = new Pool("http://www.hanjie-star.com/picross/not-a-houndsooth-22157.html");
         pool.solve(false);
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
+        flushConsole();
     }
 }
