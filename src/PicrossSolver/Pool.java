@@ -7,6 +7,9 @@ import java.util.InputMismatchException;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Contains entire picross pool, holding top and side borders as well as the binary matrix.
+ */
 public class Pool implements iPool {
     iBorder top;
     iBorder side;
@@ -42,12 +45,12 @@ public class Pool implements iPool {
             List<iPattern> sidePatterns = new LinkedList<>();
 
             for(List<Integer> pat : topData){
-                iPattern pattern = new PatternCode(pat, false);
+                iPattern pattern = new PatternCode(pat);
                 topPatterns.add(pattern);
             }
 
             for(List<Integer> pat : sideData){
-                iPattern pattern = new PatternCode(pat, false);
+                iPattern pattern = new PatternCode(pat);
                 sidePatterns.add(pattern);
             }
 
@@ -182,11 +185,10 @@ public class Pool implements iPool {
         }
         catch(InputMismatchException e){
             System.out.println("Incorrect pattern - picross cannot be solved");
+            return false;
         }
         catch(Exception e){
             e.printStackTrace();
-        }
-        finally{
             return false;
         }
     }
@@ -271,6 +273,7 @@ public class Pool implements iPool {
         return false;
 
     }
+
 
     public static void main(String[] args) {
         Pool pool = new Pool("http://www.hanjie-star.com/picross/not-a-houndsooth-22157.html");

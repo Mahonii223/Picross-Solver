@@ -13,12 +13,6 @@ public interface iPattern extends Iterable{
      */
     String toString();
 
-    /**
-     * Getters and setters
-     */
-    void setSolved(boolean solved);
-    boolean isSolved();
-    void setData(LinkedList<Integer> data);
     List<Integer> getData();
 
 
