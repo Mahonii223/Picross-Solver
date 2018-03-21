@@ -27,4 +27,4 @@ Where the only argument indicates whether or not the process of solving the picr
 * **Marcin Pham** - [mailto:Mahonii223](mailto://marcin.kamo@gmail.com)
 
 ## License
-This project is licensed under the MIT License - see the [license.md](license.md) file for details
+This project is licensed under the MIT License - see the [license.md](LICENSE) file for details
