@@ -3,6 +3,7 @@ package PicrossSolver;
 
 import org.jsoup.Jsoup;
 
+import java.util.InputMismatchException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -58,6 +59,10 @@ public class Pool implements iPool {
         }
     }
 
+    /**
+     * Creates and ASCII representation of the entire pool
+     * @return string containing the representation
+     */
     public String toString(){
         StringBuilder builder = new StringBuilder();
         int maxLenTop = 0;
@@ -124,7 +129,7 @@ public class Pool implements iPool {
     public void solve(boolean display){
         matrix = new Matrix(side.getData().size(), top.getData().size());
         int counter = 0;
-        while(!matrix.isSolved()&&iterate(display)){
+        while(!matrix.isSolved()&&scan(display)){
             counter++;
             System.out.println("Evaluation index: "+counter);
         }
@@ -139,79 +144,108 @@ public class Pool implements iPool {
         }
     }
 
-    public boolean iterate(boolean display){
-        int index = 0;
-        boolean changed = false;
-        for(iPattern pattern : top.getData()){
-            if(evaluate(pattern, matrix.getColumn(index)))
-                changed = true;
-            index++;
-            System.out.println("Checking column: "+index);
-            System.out.println(this.toString());
+    public boolean scan(boolean display){
+        try {
+            int index = 0;
+            boolean changed = false;
+            for (iPattern pattern : top.getData()) {
+                if (evaluate(pattern, matrix.getColumn(index)))
+                    changed = true;
+                index++;
+                System.out.println("Checking column: " + index);
+                System.out.println(this.toString());
 
 
-            if(display) {
-                flushConsole();
+                if (display) {
+                    flushConsole();
 
-                System.out.println(matrix.toString());
+                    System.out.println(matrix.toString());
+                }
             }
-        }
-        index = 0;
+            index = 0;
 
-        for(iPattern pattern : side.getData()){
-            if(evaluate(pattern, matrix.getRow(index)))
-                changed = true;
-            index++;
-            System.out.println("Checking row: "+index);
-            System.out.println(this.toString());
+            for (iPattern pattern : side.getData()) {
+                if (evaluate(pattern, matrix.getRow(index)))
+                    changed = true;
+                index++;
+                System.out.println("Checking row: " + index);
+                System.out.println(this.toString());
 
-            if(display) {
-                flushConsole();
+                if (display) {
+                    flushConsole();
 
-                System.out.println(matrix.toString());
+                    System.out.println(matrix.toString());
+                }
             }
-        }
 
-        return changed;
+            return changed;
+        }
+        catch(InputMismatchException e){
+            System.out.println("Incorrect pattern - picross cannot be solved");
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        finally{
+            return false;
+        }
     }
 
-    public static boolean evaluate(iPattern pattern, List<Cell> row){
+    /**
+     * Evaluates and updates a single row by iterating through every possible combination and finding common blocks among the matching ones
+     * @param pattern border data
+     * @param row List of cells
+     * @return true, if any uncertain cell has been made certain. Otherwise false
+     */
+    public static boolean evaluate(iPattern pattern, List<Cell> row) throws InputMismatchException{
 
+        //Create a list corresponding with with provided row.
         List<Boolean> certain = new LinkedList<>();
         for(int i=0; i<row.size(); i++){
+            //At first the list contains only true values, because the first matching row combination has no predecessors, and thus nothing to compare it to.
             certain.add(true);
         }
 
+        //The reference to the last iterated pattern must be saved in order to be compared with the next one.
         List<Boolean> last = null;
 
+        //Creating a new RowGenerator - the generator will allow to easily iterate through all possible row combinations as Boolean Lists.
         RowGenerator generator = new RowGenerator(pattern, row.size());
 
         for(List<Boolean> current : generator){
+
+            //Current row combination is compared with row cells that are already certain.
             if(!conflict(row, current)){
-                //System.out.println("No conflict");
-                if(last == null)
-                    last = current;
-                else{
+                //If current combination matches certain cells, it is compared with the last matching combination
+                if(last != null)
+                {
                     for(int i = 0; i<current.size(); i++){
+                        //If a given cell with the same index has different values in two different matching combinations,
+                        //it is safe to assume that the value of this cell cannot be determined in this step
+                        //Thus, the cell is marked as uncertain.
                         if(current.get(i)!=last.get(i))
                             certain.set(i, false);
                     }
-
                 }
+                //Reference to the last combination is updated
+                last = current;
             }
         }
 
-        boolean flag = false;
+        //At this point, list certain corresponds to list last and marks every cell that had the same value throughout
+        //every matching combination. These cells are certain and can be updated.
 
+        boolean rowWasUpdated = false;
 
-
+        //If last holds null, it is clear that none of the possible combinations match certain row cells
+        //This indicates a mismatch between border pattern and row
         if(last == null)
-            System.out.println("last is null");
+            throw new InputMismatchException();
 
         for(int i=0; i<certain.size(); i++){
             if(certain.get(i)) {
                 if (!row.get(i).isCertain()) {
-                    flag = true;
+                    rowWasUpdated = true;
                     row.get(i).setCertain(true);
                     row.get(i).setValue(last.get(i));
                 }
@@ -221,10 +255,10 @@ public class Pool implements iPool {
         }
         System.out.println();
 
-        return flag;
+        return rowWasUpdated;
     }
 
-    static boolean conflict(List<Cell> row, List<Boolean> checked){
+    private static boolean conflict(List<Cell> row, List<Boolean> checked){
 
         for(int i = 0; i<row.size(); i++) {
 
