@@ -13,13 +13,13 @@ The program continues to iterate through rows and columns until either the picro
 
 Class pool contains a constructor taking url to a given picross from site hanjie-star.com as the only argument.
 The constructor retrieves html content and parses it into top and side border data.
-
+```
   Pool pool = new Pool("http://www.hanjie-star.com/picross/not-a-houndsooth-22157.html");
-  
+```
 Solve the picross:
-
+```
   pool.solve(false);
-
+```
 Where the only argument indicates whether or not the process of solving the picross should be displayed.
 
 
