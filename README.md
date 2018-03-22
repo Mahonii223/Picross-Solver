@@ -6,7 +6,7 @@ A simple Java picross solver, downloading content from given hanjie-star.com gam
 
 The solver utilizes a somewhat brute - force approach.
 For each row and column the solver iterates through every possible combination based on corresponding border code.
-Cells with the same value across every single matching combination are marked updated and marked on the matrix.
+Cells with the same value across every single matching combination are updated and marked on the matrix.
 The program continues to iterate through rows and columns until either the picross is solved or the patterns are evaluated as incorrect (insufficient and/or conflicting)
 
 ## Example use
