@@ -66,8 +66,15 @@ public class EvaluationTest {
         row.get(0).setValue(true);
         row.get(0).setValue(true);
 
-        example(() -> Pool.evaluate(pat, row));
+        boolean exceptionThrown = false;
 
-        Throwable exception = assertThrows(InputMismatchException.class, Pool::evaluate);
+        try{
+            Pool.evaluate(pat, row);
+        }
+        catch(InputMismatchException e){
+            exceptionThrown = true;
+        }
+
+        assertTrue(exceptionThrown);
     }
 }
