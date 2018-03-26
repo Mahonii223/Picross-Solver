@@ -11,9 +11,9 @@ import java.util.List;
  * Contains entire picross pool, holding top and side borders as well as the binary matrix.
  */
 public class Pool implements iPool {
-    iBorder top;
-    iBorder side;
-    iMatrix matrix;
+    private iBorder top;
+    private iBorder side;
+    private iMatrix matrix;
 
     public Pool(String url){
         try {

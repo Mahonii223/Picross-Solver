@@ -32,28 +32,29 @@ public class EvaluationTest {
         for(int i=0; i<17; i++) {
             assertEquals(true, row.get(i).isCertain());
         }
-        assertEquals(true, row.get(0).getValue());
-        assertEquals(true, row.get(1).getValue());
-        assertEquals(false, row.get(2).getValue());
-        assertEquals(true, row.get(3).getValue());
-        assertEquals(true, row.get(4).getValue());
-        assertEquals(true, row.get(5).getValue());
-        assertEquals(false, row.get(6).getValue());
-        assertEquals(true, row.get(7).getValue());
-        assertEquals(false, row.get(8).getValue());
-        assertEquals(true, row.get(9).getValue());
-        assertEquals(false, row.get(10).getValue());
-        assertEquals(true, row.get(11).getValue());
-        assertEquals(true, row.get(12).getValue());
-        assertEquals(true, row.get(13).getValue());
-        assertEquals(false, row.get(14).getValue());
-        assertEquals(true, row.get(15).getValue());
-        assertEquals(true, row.get(16).getValue());
+        assertTrue(row.get(0).getValue());
+        assertTrue(row.get(1).getValue());
+        assertFalse(row.get(2).getValue());
+        assertTrue(row.get(3).getValue());
+        assertTrue(row.get(4).getValue());
+        assertTrue(row.get(5).getValue());
+        assertFalse(row.get(6).getValue());
+        assertTrue(row.get(7).getValue());
+        assertFalse(row.get(8).getValue());
+        assertTrue(row.get(9).getValue());
+        assertFalse(row.get(10).getValue());
+        assertTrue(row.get(11).getValue());
+        assertTrue(row.get(12).getValue());
+        assertTrue(row.get(13).getValue());
+        assertFalse(row.get(14).getValue());
+        assertTrue(row.get(15).getValue());
+        assertTrue(row.get(16).getValue());
     }
 
     @Test
     void ExceptionTesting(){
         //Testing pattern: 1 against row 1xxx1
+        //Should throw exception
         List<Integer> data = new LinkedList<>();
         data.add(1);
         iPattern pat = new PatternCode(data);
@@ -64,7 +65,7 @@ public class EvaluationTest {
         row.get(0).setCertain(true);
         row.get(4).setCertain(true);
         row.get(0).setValue(true);
-        row.get(0).setValue(true);
+        row.get(4).setValue(true);
 
         boolean exceptionThrown = false;
 
