@@ -13,10 +13,12 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 /**
  * Contains entire picross pool, holding top and side borders as well as the binary matrix.
  */
@@ -34,7 +36,8 @@ public class Pool implements iPool {
     public static File toXML(String url){
         try {
             String document = Jsoup.connect(url).get().toString();
-            String data = document.substring(document.indexOf("{", document.indexOf("labels:"))+1,
+            String data =
+                    document.substring(document.indexOf("{", document.indexOf("labels:"))+1,
                     document.indexOf("}", document.indexOf("labels:")));
 
             String top = data.split("\"")[3];
@@ -82,28 +85,46 @@ public class Pool implements iPool {
     }
 
     public Pool(String url){
+        this(toXML(url));
+    }
+
+    public Pool(File file){
+        this(parse(file));
+    }
+
+    private static Document parse(File file){
+        try{
+            return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Pool(Document doc){
         try {
-            String document = Jsoup.connect(url).get().toString();
-            String data = document.substring(document.indexOf("{", document.indexOf("labels:"))+1,
-                    document.indexOf("}", document.indexOf("labels:")));
-
-            String top = data.split("\"")[3];
-            String side = data.split("\"")[1];
-
             List<List<Integer>> topData = new LinkedList<>();
             List<List<Integer>> sideData = new LinkedList<>();
 
-            for(String i : top.split(";")){
+            Node top = doc.getElementsByTagName("top").item(0);
+            Node side = doc.getElementsByTagName("side").item(0);
+
+            for(int i = 0; i<top.getChildNodes().getLength(); i++){
                 List<Integer> border = new LinkedList<>();
-                for(String a : i.split(","))
-                    border.add(Integer.parseInt(a));
+                String[] numbers = top.getChildNodes().item(i).getTextContent().split(",");
+                for(String s : numbers){
+                    border.add(Integer.parseInt(s));
+                }
                 topData.add(border);
             }
 
-            for(String i : side.split(";")){
+            for(int i = 0; i<side.getChildNodes().getLength(); i++){
                 List<Integer> border = new LinkedList<>();
-                for(String a : i.split(","))
-                    border.add(Integer.parseInt(a));
+                String[] numbers = side.getChildNodes().item(i).getTextContent().split(",");
+                for(String s : numbers){
+                    border.add(Integer.parseInt(s));
+                }
                 sideData.add(border);
             }
 
@@ -342,9 +363,10 @@ public class Pool implements iPool {
 
 
     public static void main(String[] args) {
-        Pool.toXML("http://www.hanjie-star.com/picross/a-collection-of-keys-22243.html");
-        //Pool pool = new Pool("http://www.hanjie-star.com/picross/not-a-houndsooth-22157.html");
-        //pool.solve(false);
-        //flushConsole();
+        //Pool.toXML("http://www.hanjie-star.com/picross/a-collection-of-keys-22243.html");
+        Pool pool = new Pool("http://www.hanjie-star.com/picross/not-a-houndsooth-22157.html");
+        pool.solve(false);
+        System.out.println(pool);
+        flushConsole();
     }
 }
