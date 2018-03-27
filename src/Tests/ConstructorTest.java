@@ -21,7 +21,6 @@ public class ConstructorTest {
             assertNotNull(pool);
         }
         catch(Exception e){
-            e.printStackTrace();
         }
     }
 

@@ -350,11 +350,9 @@ public class Pool implements iPool {
 
 
     public static void main(String[] args) {
-        //Pool.toXML("http://www.hanjie-star.com/picross/a-collection-of-keys-22243.html");
         try {
-            Pool pool = new Pool("http://www.hanjie-star.com/picross/not-a-houndsooth-22157.html");
+            Pool pool = new Pool(args[0]);
             pool.solve(false);
-            System.out.println(pool);
             flushConsole();
         }
         catch(Exception e){
