@@ -11,8 +11,8 @@ The program continues to iterate through rows and columns until either the picro
 
 ## Example use
 
-Class pool contains a constructor taking url to a given picross from site hanjie-star.com as the only argument.
-The constructor retrieves html content and parses it into top and side border data.
+Class Pool contains constructors accepting picross pool as xml File, parsed Document or url to any game from hanjie-star.com.
+
 ```
   Pool pool = new Pool("http://www.hanjie-star.com/picross/not-a-houndsooth-22157.html");
 ```
