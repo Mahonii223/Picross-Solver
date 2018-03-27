@@ -3,9 +3,19 @@ package PicrossSolver;
 
 import org.jsoup.Jsoup;
 
+import java.io.File;
 import java.util.InputMismatchException;
 import java.util.LinkedList;
 import java.util.List;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * Contains entire picross pool, holding top and side borders as well as the binary matrix.
@@ -14,6 +24,62 @@ public class Pool implements iPool {
     private iBorder top;
     private iBorder side;
     private iMatrix matrix;
+
+    /**
+     * Takes url to any hanje-star.com picross game and parses it into XML file
+     * The file contains root "picross" with nodes "top" containing columns and "side" containing rows
+     * @param url URL to picross game
+     * @return XML file containing border codes
+     */
+    public static File toXML(String url){
+        try {
+            String document = Jsoup.connect(url).get().toString();
+            String data = document.substring(document.indexOf("{", document.indexOf("labels:"))+1,
+                    document.indexOf("}", document.indexOf("labels:")));
+
+            String top = data.split("\"")[3];
+            String side = data.split("\"")[1];
+
+            DocumentBuilderFactory dbFactory =
+                    DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.newDocument();
+
+            Element rootElement = doc.createElement("picross");
+            doc.appendChild(rootElement);
+
+            Element topCodes = doc.createElement("top");
+            rootElement.appendChild(topCodes);
+
+            Element sideCodes = doc.createElement("side");
+            rootElement.appendChild(sideCodes);
+
+            for(String col : top.split(";")){
+                Element column = doc.createElement("column");
+                column.appendChild(doc.createTextNode(col));
+                topCodes.appendChild(column);
+            }
+
+            for(String row : side.split(";")){
+                Element rowElement = doc.createElement("row");
+                rowElement.appendChild(doc.createTextNode(row));
+                sideCodes.appendChild(rowElement);
+            }
+
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            File file = new File("picross.xml");
+            StreamResult result = new StreamResult(file);
+            transformer.transform(source, result);
+
+            return file;
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public Pool(String url){
         try {
@@ -276,8 +342,9 @@ public class Pool implements iPool {
 
 
     public static void main(String[] args) {
-        Pool pool = new Pool("http://www.hanjie-star.com/picross/not-a-houndsooth-22157.html");
-        pool.solve(false);
-        flushConsole();
+        Pool.toXML("http://www.hanjie-star.com/picross/a-collection-of-keys-22243.html");
+        //Pool pool = new Pool("http://www.hanjie-star.com/picross/not-a-houndsooth-22157.html");
+        //pool.solve(false);
+        //flushConsole();
     }
 }
