@@ -1,6 +1,7 @@
 package PicrossSolver;
 
 
+import com.sun.xml.internal.ws.api.message.ExceptionHasMessage;
 import org.jsoup.Jsoup;
 
 import java.io.File;
@@ -14,11 +15,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.w3c.dom.Attr;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+
 /**
  * Contains entire picross pool, holding top and side borders as well as the binary matrix.
  */
@@ -33,8 +34,8 @@ public class Pool implements iPool {
      * @param url URL to picross game
      * @return XML file containing border codes
      */
-    public static File toXML(String url){
-        try {
+    public static File toXML(String url) throws Exception{
+
             String document = Jsoup.connect(url).get().toString();
             String data =
                     document.substring(document.indexOf("{", document.indexOf("labels:"))+1,
@@ -77,33 +78,22 @@ public class Pool implements iPool {
             transformer.transform(source, result);
 
             return file;
-        }
-        catch(Exception e){
-            e.printStackTrace();
-            return null;
-        }
+
+
     }
 
-    public Pool(String url){
+    public Pool(String url) throws Exception{
         this(toXML(url));
     }
 
-    public Pool(File file){
-        this(parse(file));
+
+    public Pool(File file) throws Exception{
+        this(DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file));
     }
 
-    private static Document parse(File file){
-        try{
-            return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file);
-        }
-        catch(Exception e){
-            e.printStackTrace();
-            return null;
-        }
-    }
 
-    public Pool(Document doc){
-        try {
+    public Pool(Document doc) throws Exception{
+
             List<List<Integer>> topData = new LinkedList<>();
             List<List<Integer>> sideData = new LinkedList<>();
 
@@ -144,9 +134,6 @@ public class Pool implements iPool {
             this.top = new BorderCode(topPatterns);
             this.side = new BorderCode(sidePatterns);
 
-        } catch (Exception e){
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -364,9 +351,14 @@ public class Pool implements iPool {
 
     public static void main(String[] args) {
         //Pool.toXML("http://www.hanjie-star.com/picross/a-collection-of-keys-22243.html");
-        Pool pool = new Pool("http://www.hanjie-star.com/picross/not-a-houndsooth-22157.html");
-        pool.solve(false);
-        System.out.println(pool);
-        flushConsole();
+        try {
+            Pool pool = new Pool("http://www.hanjie-star.com/picross/not-a-houndsooth-22157.html");
+            pool.solve(false);
+            System.out.println(pool);
+            flushConsole();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }
