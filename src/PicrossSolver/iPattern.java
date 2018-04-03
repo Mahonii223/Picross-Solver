@@ -15,5 +15,4 @@ public interface iPattern extends Iterable{
 
     List<Integer> getData();
 
-
 }

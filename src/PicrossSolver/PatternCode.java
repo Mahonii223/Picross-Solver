@@ -27,16 +27,17 @@ public class PatternCode implements iPattern{
     }
 
 
-    public Iterator<Integer> iterator(){
-        return this.getData().iterator();
-    }
-
     public String toString(){
         StringBuilder ret = new StringBuilder();
         ret.append("Border values: ");
         for(int i : data)
             ret.append(i+" ");
         return ret.toString();
+    }
+
+    @Override
+    public Iterator<Integer> iterator(){
+        return data.iterator();
     }
 
 }
