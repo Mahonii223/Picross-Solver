@@ -1,23 +1,15 @@
 package PicrossSolver;
 
 
-import com.sun.xml.internal.ws.api.message.ExceptionHasMessage;
-import org.jsoup.Jsoup;
 
 import java.io.File;
 import java.util.InputMismatchException;
 import java.util.LinkedList;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import static java.lang.System.*;
@@ -42,7 +34,7 @@ public class Pool implements iPool {
     }
 
 
-    public Pool(Document doc) throws Exception{
+    public Pool(Document doc){
 
             List<List<Integer>> topData = new LinkedList<>();
             List<List<Integer>> sideData = new LinkedList<>();
@@ -72,12 +64,12 @@ public class Pool implements iPool {
             List<iPattern> sidePatterns = new LinkedList<>();
 
             for(List<Integer> pat : topData){
-                iPattern pattern = new PatternCode(pat);
+                iPattern pattern = new Pattern(pat);
                 topPatterns.add(pattern);
             }
 
             for(List<Integer> pat : sideData){
-                iPattern pattern = new PatternCode(pat);
+                iPattern pattern = new Pattern(pat);
                 sidePatterns.add(pattern);
             }
 
@@ -97,14 +89,14 @@ public class Pool implements iPool {
 
         //determining longest top pattern
         for(iPattern pattern : this.top.getData()){
-            if(pattern.getData().size()>maxLenTop)
-                maxLenTop = pattern.getData().size();
+            if(pattern.size()>maxLenTop)
+                maxLenTop = pattern.size();
         }
 
         //determining longest side pattern
         for(iPattern pattern : this.side.getData()){
-            if(pattern.getData().size()>maxLenSide)
-                maxLenSide = pattern.getData().size();
+            if(pattern.size()>maxLenSide)
+                maxLenSide = pattern.size();
         }
 
         //invoking matrix content
@@ -119,8 +111,8 @@ public class Pool implements iPool {
             }
             builder.append('|');
             for(iPattern pattern : top.getData()){
-                if(pattern.getData().size()-maxLenTop+i>=0)
-                    builder.append(String.format("%02d", pattern.getData().get(pattern.getData().size()-maxLenTop+i)));
+                if(pattern.size()-maxLenTop+i>=0)
+                    builder.append(String.format("%02d", pattern.get(pattern.size()-maxLenTop+i)));
                 else
                     builder.append("  ");
                 builder.append('|');
@@ -133,8 +125,8 @@ public class Pool implements iPool {
 
         for(iPattern pattern : side.getData()){
             for(int i = 0; i<maxLenSide; i++) {
-                if (pattern.getData().size() - maxLenSide + i >= 0)
-                    builder.append(String.format("%02d", pattern.getData().get(pattern.getData().size() - maxLenSide + i)));
+                if (pattern.size() - maxLenSide + i >= 0)
+                    builder.append(String.format("%02d", pattern.get(pattern.size() - maxLenSide + i)));
                 else
                     builder.append("  ");
                 builder.append('|');
@@ -272,7 +264,7 @@ public class Pool implements iPool {
 
     public static void main(String[] args) {
         try {
-            Pool pool = new Pool(args[0]);
+            iPool pool = new Pool(args[0]);
             pool.solve();
             out.println(pool);
         }

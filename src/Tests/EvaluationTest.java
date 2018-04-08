@@ -20,7 +20,7 @@ public class EvaluationTest {
         data.add(1);
         data.add(3);
         data.add(2);
-        iPattern pat = new PatternCode(data);
+        iPattern pat = new Pattern(data);
 
         List<Cell> row = new LinkedList<>();
         for(int i=0; i<17; i++){
@@ -57,7 +57,7 @@ public class EvaluationTest {
         //Should throw exception
         List<Integer> data = new LinkedList<>();
         data.add(1);
-        iPattern pat = new PatternCode(data);
+        iPattern pat = new Pattern(data);
         List<Cell> row = new LinkedList<>();
         for(int i=0; i<5; i++)
             row.add(new Cell());
